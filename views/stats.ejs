@@ -35,6 +35,11 @@
             text-overflow: ellipsis;
             padding-right: 8px;
         }
+        .bar-track {
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
         .bar {
             background-color: var(--md-sys-color-primary);
             height: 20px;
@@ -84,11 +89,13 @@
                     <% if(topOrgs.length > 0) { %>
                     <% topOrgs.forEach(o => { 
                         let max = topOrgs[0].count;
-                        let w = Math.max(10, (o.count / max) * 100);
+                        let w = Math.max(0, (o.count / max) * 100);
                     %>
-                    <div class="bar-container" title="<%= o.orgName %>">
-                        <div class="bar-label"><%= o.orgName %></div>
-                        <div class="bar" style="width: <%= w %>%"><%= o.count %></div>
+                    <div class="bar-container" title="<%= o.orgTitle || o.orgName %>">
+                        <div class="bar-label"><%= o.orgTitle || o.orgName %></div>
+                        <div class="bar-track">
+                            <div class="bar" style="width: <%= w %>%"><%= o.count %></div>
+                        </div>
                     </div>
                     <% }) %>
                     <% } else { %> <p>No data</p> <% } %>
@@ -101,11 +108,13 @@
                     <% if(topDatasets.length > 0) { %>
                     <% topDatasets.forEach(d => { 
                         let max = topDatasets[0].count;
-                        let w = Math.max(10, (d.count / max) * 100);
+                        let w = Math.max(0, (d.count / max) * 100);
                     %>
                     <div class="bar-container" title="<%= d.name %>">
                         <div class="bar-label"><%= d.name %></div>
-                        <div class="bar" style="width: <%= w %>%"><%= d.count %></div>
+                        <div class="bar-track">
+                            <div class="bar" style="width: <%= w %>%"><%= d.count %></div>
+                        </div>
                     </div>
                     <% }) %>
                     <% } else { %> <p>No user projects logged yet.</p> <% } %>
@@ -113,19 +122,79 @@
             </div>
 
             <div class="card">
-                <h3>Dataset Counts by Category</h3>
-                <h4>By Type</h4>
-                <table>
-                    <% byType.forEach(t => { %>
-                    <tr><td><strong style="text-transform:capitalize"><%= t.type %></strong></td><td><%= t.count %> Datasets</td></tr>
+                <h3>Dataset Counts by Organization</h3>
+                <div class="chart-box">
+                    <% if(byOrg.length > 0) { %>
+                    <% byOrg.forEach(o => { 
+                        let max = byOrg[0].count;
+                        let w = Math.max(0, (o.count / max) * 100);
+                    %>
+                    <div class="bar-container" title="<%= o.orgTitle || o.orgName %>">
+                        <div class="bar-label"><%= o.orgTitle || o.orgName %></div>
+                        <div class="bar-track">
+                            <div class="bar" style="width: <%= w %>%"><%= o.count %></div>
+                        </div>
+                    </div>
                     <% }) %>
-                </table>
-                <h4 style="margin-top: 16px;">By Topic (Top 10)</h4>
-                <table>
-                    <% byTopic.forEach(t => { %>
-                    <tr><td><%= t.topicName %></td><td><%= t.count %> Datasets</td></tr>
+                    <% } else { %> <p>No data</p> <% } %>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Dataset Counts by Topic</h3>
+                <div class="chart-box">
+                    <% if(byTopic.length > 0) { %>
+                    <% byTopic.forEach(t => { 
+                        let max = byTopic[0].count;
+                        let w = Math.max(0, (t.count / max) * 100);
+                    %>
+                    <div class="bar-container" title="<%= t.topicName %>">
+                        <div class="bar-label" style="text-transform: capitalize;"><%= t.topicName %></div>
+                        <div class="bar-track">
+                            <div class="bar" style="width: <%= w %>%"><%= t.count %></div>
+                        </div>
+                    </div>
                     <% }) %>
-                </table>
+                    <% } else { %> <p>No data</p> <% } %>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Dataset Counts by Format</h3>
+                <div class="chart-box">
+                    <% if(byFormat.length > 0) { %>
+                    <% byFormat.forEach(f => { 
+                        let max = byFormat[0].count;
+                        let w = Math.max(0, (f.count / max) * 100);
+                    %>
+                    <div class="bar-container" title="<%= f.format %>">
+                        <div class="bar-label"><%= f.format %></div>
+                        <div class="bar-track">
+                            <div class="bar" style="width: <%= w %>%"><%= f.count %></div>
+                        </div>
+                    </div>
+                    <% }) %>
+                    <% } else { %> <p>No data</p> <% } %>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Dataset Counts by Type</h3>
+                <div class="chart-box">
+                    <% if(byType.length > 0) { %>
+                    <% byType.forEach(t => { 
+                        let max = Math.max(...byType.map(x=>x.count));
+                        let w = Math.max(0, (t.count / max) * 100);
+                    %>
+                    <div class="bar-container" title="<%= t.type %>">
+                        <div class="bar-label" style="text-transform: capitalize;"><%= t.type %></div>
+                        <div class="bar-track">
+                            <div class="bar" style="width: <%= w %>%"><%= t.count %></div>
+                        </div>
+                    </div>
+                    <% }) %>
+                    <% } else { %> <p>No data</p> <% } %>
+                </div>
             </div>
 
             <div class="card">
@@ -134,11 +203,13 @@
                     <% if(usageByProject.length > 0) { %>
                     <% usageByProject.forEach(u => { 
                         let max = Math.max(...usageByProject.map(x=>x.count));
-                        let w = Math.max(10, (u.count / max) * 100);
+                        let w = Math.max(0, (u.count / max) * 100);
                     %>
                     <div class="bar-container">
                         <div class="bar-label" style="text-transform: capitalize;"><%= u.category %></div>
-                        <div class="bar" style="width: <%= w %>%"><%= u.count %></div>
+                        <div class="bar-track">
+                            <div class="bar" style="width: <%= w %>%"><%= u.count %></div>
+                        </div>
                     </div>
                     <% }) %>
                     <% } else { %> <p>No user projects logged yet.</p> <% } %>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= organization.title || organization.name %> - Data Catalog System</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/theme.js"></script>
+    <style>
+        .org-header {
+            display: flex;
+            align-items: center;
+            gap: 24px;
+            margin-bottom: 24px;
+            padding-bottom: 24px;
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+        }
+        .org-image {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            object-fit: contain;
+            background: white;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        .org-info h2 {
+            margin: 0 0 8px 0;
+            font-size: 28px;
+            color: var(--md-sys-color-on-surface);
+        }
+        .org-meta {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .badge {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .org-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Data Catalog System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/datasets">Datasets</a>
+            <a href="/stats">Statistics</a>
+            <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <div class="org-header">
+                <% if (organization.imageUrl) { %>
+                    <img src="<%= organization.imageUrl %>" alt="<%= organization.name %> Logo" class="org-image" onerror="this.style.display='none'">
+                <% } %>
+                <div class="org-info">
+                    <h2><%= organization.title || organization.name %></h2>
+                    <div class="org-meta">
+                        <% if (organization.type) { %>
+                            <span class="badge"><%= organization.type %></span>
+                        <% } %>
+                    </div>
+                    <% if (organization.description) { %>
+                        <div class="org-description"><%= organization.description %></div>
+                    <% } %>
+                    <% if (organization.termsOfUse) { %>
+                        <div style="margin-top: 12px;">
+                            <a href="<%= organization.termsOfUse %>" target="_blank" style="color: var(--md-sys-color-primary); font-weight: 500; text-decoration: none;">View Terms of Use →</a>
+                        </div>
+                    <% } %>
+                    <% if (contacts && contacts.length > 0) { %>
+                        <div style="margin-top: 16px; padding: 12px; background: var(--md-sys-color-surface-variant); border-radius: 8px;">
+                            <strong style="display: block; margin-bottom: 8px; font-size: 14px;">Contact Information</strong>
+                            <div style="display: flex; flex-direction: column; gap: 4px; font-size: 14px;">
+                                <% contacts.forEach(contact => { %>
+                                    <span>✉️ <a href="mailto:<%= contact %>" style="color: var(--md-sys-color-on-surface-variant); text-decoration: none;"><%= contact %></a></span>
+                                <% }) %>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </div>
+
+            <h3 style="margin-bottom: 16px; font-size: 20px;">Datasets Published (<%= datasets.length %>)</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dataset Name</th>
+                            <th>License</th>
+                            <th>Access Level</th>
+                            <th>Format</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% datasets.forEach(d => { %>
+                            <tr>
+                                <td style="font-weight: 500;"><%= d.name %></td>
+                                <td><span style="background:var(--md-sys-color-surface-variant); padding:4px 8px; border-radius:4px; font-size:12px;"><%= d.license || 'Unknown' %></span></td>
+                                <td><%= d.accessLevel || 'N/A' %></td>
+                                <td><%= d.format || 'N/A' %></td>
+                            </tr>
+                        <% }) %>
+                        <% if (datasets.length === 0) { %>
+                            <tr>
+                                <td colspan="4" style="text-align: center; padding: 32px; color: var(--md-sys-color-on-surface-variant);">No datasets published yet.</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

@@ -5,9 +5,10 @@ const db = require("../db");
 router.get("/", async (req, res) => {
     try {
         const [topOrgs] = await db.execute(`
-            SELECT orgName, COUNT(*) as count 
-            FROM Dataset 
-            GROUP BY orgName 
+            SELECT d.orgName, o.title as orgTitle, COUNT(*) as count 
+            FROM Dataset d 
+            LEFT JOIN Organization o ON d.orgName = o.name
+            GROUP BY d.orgName, o.title
             ORDER BY count DESC 
             LIMIT 5
         `);
@@ -21,17 +22,22 @@ router.get("/", async (req, res) => {
             LIMIT 5
         `);
 
-        const [byOrg] = await db.execute(`SELECT orgName, COUNT(*) as count FROM Dataset GROUP BY orgName ORDER BY count DESC LIMIT 10`);
-        const [byTopic] = await db.execute(`SELECT topicName, COUNT(*) as count FROM Dataset WHERE topicName IS NOT NULL GROUP BY topicName ORDER BY count DESC LIMIT 10`);
+        const [byOrg] = await db.execute(`
+            SELECT d.orgName, o.title as orgTitle, COUNT(*) as count 
+            FROM Dataset d 
+            LEFT JOIN Organization o ON d.orgName = o.name
+            GROUP BY d.orgName, o.title 
+            ORDER BY count DESC
+        `);
+        const [byTopic] = await db.execute(`SELECT topicName, COUNT(*) as count FROM Dataset WHERE topicName IS NOT NULL GROUP BY topicName ORDER BY count DESC`);
         
         const [byFormat] = await db.execute(`
-            SELECT r.format, COUNT(DISTINCT d.id) as count 
+            SELECT IF(UPPER(r.format)='ACCDB', 'MS Access', UPPER(r.format)) as format, COUNT(DISTINCT d.id) as count 
             FROM Dataset d 
             JOIN Resources r ON d.id = r.datasetId 
             WHERE r.format IS NOT NULL 
-            GROUP BY r.format 
-            ORDER BY count DESC 
-            LIMIT 10
+            GROUP BY format 
+            ORDER BY count DESC
         `);
 
         const [byType] = await db.execute(`

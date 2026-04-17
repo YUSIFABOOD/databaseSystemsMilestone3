@@ -81,6 +81,26 @@
                 </tbody>
             </table>
             </div>
+
+            <% if (typeof pagination !== 'undefined' && pagination.totalPages > 1) { %>
+                <div class="pagination" style="padding: 24px; display:flex; align-items:center; gap:16px;">
+                    <% if (pagination.page > 1) { %>
+                        <a href="/users/view-usage?page=<%= pagination.page - 1 %>">Previous</a>
+                    <% } %>
+                    
+                    <form method="GET" action="/users/view-usage" style="display:flex; align-items:center; gap:8px; margin:0;">
+                        <span>Page</span>
+                        <input type="number" name="page" value="<%= pagination.page %>" min="1" max="<%= pagination.totalPages %>" style="width: 70px; padding: 4px 8px; text-align:center;">
+                        <span>of <%= pagination.totalPages %></span>
+                        <button type="submit" style="padding: 6px 12px; margin-left: 8px;">GO</button>
+                    </form>
+
+                    <% if (pagination.page < pagination.totalPages) { %>
+                        <a href="/users/view-usage?page=<%= pagination.page + 1 %>">Next</a>
+                    <% } %>
+                </div>
+            <% } %>
+
         </div>
         <% } else if (usageList && usageList.length === 0) { %>
             <div class="card"><p>No usage recorded yet.</p></div>

@@ -7,19 +7,21 @@ router.get("/", async (req, res) => {
     try {
         let { orgType, format, tag, page } = req.query;
         page = parseInt(page) || 1;
-        const limit = 50;
+        const limit = 100;
         const offset = (page - 1) * limit;
 
         let query = `
-            SELECT DISTINCT d.id, d.name, d.publisher, d.accessLevel, 
-                   o.type as orgType, d.orgName
+            SELECT d.id, d.name, d.publisher, d.accessLevel, d.license,
+                   o.type as orgType, d.orgName, GROUP_CONCAT(DISTINCT r.format SEPARATOR ', ') as format
             FROM Dataset d
             LEFT JOIN Organization o ON d.orgName = o.name
+            LEFT JOIN Resources r ON d.id = r.datasetId
         `;
         let countQuery = `
             SELECT COUNT(DISTINCT d.id) as total
             FROM Dataset d
             LEFT JOIN Organization o ON d.orgName = o.name
+            LEFT JOIN Resources r ON d.id = r.datasetId
         `;
 
         const joins = [];
@@ -28,9 +30,8 @@ router.get("/", async (req, res) => {
         let paramsCount = [];
 
         if (format) {
-            joins.push(`JOIN Resources r ON d.id = r.datasetId`);
-            conditions.push(`r.format = ?`);
-            paramsStr.push(format);
+            conditions.push(`UPPER(r.format) = ?`);
+            paramsStr.push(format === 'MS Access' ? 'ACCDB' : format.toUpperCase());
         }
         if (tag) {
             joins.push(`JOIN DatasetTags dt ON d.id = dt.datasetId`);
@@ -47,7 +48,7 @@ router.get("/", async (req, res) => {
         const joinStr = joins.join(" ");
         const whereStr = conditions.length > 0 ? "WHERE " + conditions.join(" AND ") : "";
 
-        query += ` ${joinStr} ${whereStr} ORDER BY d.id LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
+        query += ` ${joinStr} ${whereStr} GROUP BY d.id ORDER BY d.id LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}`;
         countQuery += ` ${joinStr} ${whereStr}`;
 
         const [countResult] = await db.execute(countQuery, paramsCount);
@@ -56,14 +57,29 @@ router.get("/", async (req, res) => {
 
         const [datasets] = await db.execute(query, paramsStr);
         
+        // Clean formats in datasets
+        datasets.forEach(d => {
+            if (d.format) {
+                let fs = d.format.split(', ');
+                fs = fs.filter(f => f.length > 0);
+                fs = fs.map(f => f.toUpperCase() === 'ACCDB' ? 'MS Access' : f.toUpperCase());
+                d.format = [...new Set(fs)].join(', ');
+            }
+        });
+
         // Fetch unique orgTypes and formats for filter dropdowns
         const [orgTypes] = await db.execute("SELECT DISTINCT type FROM Organization WHERE type IS NOT NULL ORDER BY type ASC");
         const [formats] = await db.execute("SELECT DISTINCT format FROM Resources WHERE format IS NOT NULL ORDER BY format ASC");
+        
+        let validFormats = formats.map(row => row.format);
+        validFormats = validFormats.filter(f => f.length > 0);
+        validFormats = validFormats.map(f => f.toUpperCase() === 'ACCDB' ? 'MS Access' : f.toUpperCase());
+        validFormats = [...new Set(validFormats)].sort();
 
         res.render("datasets", {
             datasets,
             orgTypes: orgTypes.map(row => row.type),
-            formats: formats.map(row => row.format),
+            formats: validFormats,
             filters: { orgType, format, tag },
             pagination: { page, totalPages }
         });

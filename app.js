@@ -11,6 +11,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use("/users", require("./routes/users"));
 app.use("/datasets", require("./routes/datasets"));
 app.use("/stats", require("./routes/stats"));
+app.use("/organization", require("./routes/organizations"));
 
 app.get("/", (req, res) => res.render("index"));
 

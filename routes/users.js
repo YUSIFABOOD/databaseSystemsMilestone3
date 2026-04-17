@@ -56,18 +56,41 @@ router.post("/log-usage", async (req, res) => {
     }
 });
 
-// View usage
+// View usage logs (paginated)
 router.get("/view-usage", async (req, res) => {
     try {
-        const [usageList] = await db.execute(`
+        let page = parseInt(req.query.page) || 1;
+        const limit = 100;
+        const offset = (page - 1) * limit;
+
+        const countQuery = `
+            SELECT COUNT(*) AS total
+            FROM datasetProject dp
+            JOIN Project p ON dp.userEmail = p.userEmail AND dp.projectName = p.name
+            JOIN User u ON dp.userEmail = u.email
+            JOIN Dataset d ON dp.datasetId = d.id
+        `;
+        const [countResult] = await db.execute(countQuery);
+        const totalItems = countResult[0].total;
+        const totalPages = Math.ceil(totalItems / limit);
+
+        const dataQuery = `
             SELECT u.username, d.name AS dataset_name, dp.projectName AS project_name, p.category
             FROM datasetProject dp
             JOIN Project p ON dp.userEmail = p.userEmail AND dp.projectName = p.name
             JOIN User u ON dp.userEmail = u.email
             JOIN Dataset d ON dp.datasetId = d.id
             ORDER BY u.username, dp.projectName
-        `);
-        res.render("usage", { usageList, users: null, datasets: null });
+            LIMIT ${parseInt(limit)} OFFSET ${parseInt(offset)}
+        `;
+        const [usageList] = await db.execute(dataQuery);
+
+        res.render("usage", { 
+            usageList, 
+            users: null, 
+            datasets: null,
+            pagination: { page, totalPages }
+        });
     } catch (e) {
         console.error("View usage error:", e);
         res.status(500).send("Error fetching usage logs");
