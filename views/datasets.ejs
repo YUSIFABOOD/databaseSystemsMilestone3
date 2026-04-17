@@ -5,15 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Browse Datasets</title>
     <link rel="stylesheet" href="/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/theme.js"></script>
 </head>
 <body>
     <header>
         <h1>Data Catalog System</h1>
         <nav>
             <a href="/">Home</a>
-            <a href="/datasets">Datasets</a>
+            <strong style="padding:8px 16px;">Datasets</strong>
             <a href="/stats">Statistics</a>
+            <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
         </nav>
     </header>
     <main>
@@ -47,28 +49,35 @@
         </div>
 
         <div class="card" style="padding:0">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Publisher</th>
-                        <th>Access Level</th>
-                        <th>Org Type</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% datasets.forEach(d => { %>
+            <div class="table-responsive">
+                <table>
+                    <thead>
                         <tr>
-                            <td><%= d.id %></td>
-                            <td><%= d.name.length > 50 ? d.name.substring(0, 50) + '...' : d.name %></td>
-                            <td><%= d.publisher || d.orgName %></td>
-                            <td style="text-transform: capitalize;"><%= d.accessLevel %></td>
-                            <td><%= d.orgType || 'N/A' %></td>
+                            <th>Target Dataset Name</th>
+                            <th>Publisher</th>
+                            <th>License</th>
+                            <th>Org Type</th>
+                            <th>Format</th>
                         </tr>
-                    <% }) %>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% datasets.forEach(d => { %>
+                            <tr>
+                                <td style="font-weight: 500;"><%= d.name %></td>
+                                <td><%= d.publisher || 'N/A' %></td>
+                                <td><span style="background:var(--md-sys-color-surface-variant); padding:4px 8px; border-radius:4px; font-size:12px;"><%= d.license || 'Unknown' %></span></td>
+                                <td><%= d.orgType || 'N/A' %></td>
+                                <td><%= d.format || 'N/A' %></td>
+                            </tr>
+                        <% }) %>
+                        <% if(datasets.length === 0) { %>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 32px; color: #777;">No datasets matched your filters. Try clearing them!</td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            </div>
             
             <% if (pagination.totalPages > 1) { %>
                 <div class="pagination" style="padding: 24px;">

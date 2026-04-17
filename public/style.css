@@ -1,4 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+
 :root {
+  /* Light Theme Material You Defaults */
   --md-sys-color-primary: #6750A4;
   --md-sys-color-on-primary: #FFFFFF;
   --md-sys-color-primary-container: #EADDFF;
@@ -10,10 +13,28 @@
   --md-sys-color-surface-variant: #E7E0EC;
   --md-sys-color-on-surface-variant: #49454F;
   --md-sys-color-outline: #79747E;
-  --md-ref-typeface-brand: 'Roboto', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --md-ref-typeface-brand: 'Outfit', 'Roboto', system-ui, sans-serif;
   
   --elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
   --elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.15), 0px 1px 2px 0px rgba(0, 0, 0, 0.30);
+}
+
+[data-theme="dark"] {
+  /* Deep Premium Dark Theme */
+  --md-sys-color-primary: #D0BCFF;
+  --md-sys-color-on-primary: #381E72;
+  --md-sys-color-primary-container: #4F378B;
+  --md-sys-color-on-primary-container: #EADDFF;
+  --md-sys-color-secondary-container: #4A4458;
+  --md-sys-color-on-secondary-container: #E8DEF8;
+  --md-sys-color-surface: #141218;
+  --md-sys-color-on-surface: #E6E0E9;
+  --md-sys-color-surface-variant: #49454F;
+  --md-sys-color-on-surface-variant: #CAC4D0;
+  --md-sys-color-outline: #938F99;
+  
+  --elevation-1: 0px 1px 3px 1px rgba(0, 0, 0, 0.30), 0px 1px 2px 0px rgba(0, 0, 0, 0.50);
+  --elevation-2: 0px 2px 6px 2px rgba(0, 0, 0, 0.30), 0px 1px 2px 0px rgba(0, 0, 0, 0.50);
 }
 
 body {
@@ -25,6 +46,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header {
@@ -32,27 +54,29 @@ header {
   color: var(--md-sys-color-on-surface);
   padding: 20px 24px;
   display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
   justify-content: space-between;
   align-items: center;
   box-shadow: var(--elevation-1);
   position: sticky;
   top: 0;
   z-index: 1000;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 header h1 {
   margin: 0;
   font-size: 22px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--md-sys-color-primary);
 }
 
-header nav ul {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+header nav {
   display: flex;
   gap: 16px;
+  align-items: center;
+  flex-wrap: wrap;
 }
 
 header nav a {
@@ -256,4 +280,53 @@ tr:hover {
   margin-bottom: 0;
   flex: 1;
   min-width: 200px;
+}
+
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  box-shadow: var(--elevation-1);
+}
+
+/* Theme Toggle Button Style */
+.theme-toggle {
+  background: transparent;
+  color: var(--md-sys-color-on-surface-variant);
+  border: 1px solid var(--md-sys-color-outline);
+  box-shadow: none;
+  border-radius: 100px;
+  padding: 6px 12px;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.theme-toggle:hover {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+  box-shadow: none;
+}
+
+/* Make action buttons stack on small screens */
+.button-group {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .button-group {
+    flex-direction: column;
+  }
+  .button-group button {
+    width: 100%;
+  }
+  header {
+    flex-direction: column;
+    text-align: center;
+  }
 }
