@@ -1,0 +1,9 @@
+node_modules/
+.env
+err.txt
+query_out.txt
+query_err.txt
+schema_clean.sql
+test-db.js
+test-query.js
+test-register.js

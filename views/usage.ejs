@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dataset Usage - Data Catalog</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Data Catalog System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/datasets">Datasets</a>
+            <a href="/stats">Statistics</a>
+        </nav>
+    </header>
+    <main>
+        <% if (users && users.length > 0) { %>
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <h2>Log Dataset Usage</h2>
+            <form action="/users/log-usage" method="POST">
+                <div class="input-group">
+                    <label>User</label>
+                    <select name="userEmail" required>
+                        <% users.forEach(u => { %>
+                            <option value="<%= u.email %>"><%= u.username %> (<%= u.email %>)</option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Dataset</label>
+                    <select name="datasetId" required>
+                        <% datasets.forEach(d => { %>
+                            <option value="<%= d.id %>"><%= d.name.substring(0, 100) %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Project Name</label>
+                    <input type="text" name="projectName" required>
+                </div>
+                <div class="input-group">
+                    <label>Category</label>
+                    <select name="category" required>
+                        <option value="analytics">Analytics</option>
+                        <option value="machine learning">Machine Learning</option>
+                        <option value="field research">Field Research</option>
+                    </select>
+                </div>
+                <button type="submit">Log Usage</button>
+            </form>
+        </div>
+        <% } %>
+
+        <% if (usageList && usageList.length > 0) { %>
+        <div class="card">
+            <h2>Dataset Usage Log</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Dataset</th>
+                        <th>Project Name</th>
+                        <th>Category</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% usageList.forEach(item => { %>
+                    <tr>
+                        <td><%= item.username %></td>
+                        <td><%= item.dataset_name %></td>
+                        <td><%= item.project_name %></td>
+                        <td style="text-transform: capitalize;"><%= item.category %></td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+        <% } else if (usageList && usageList.length === 0) { %>
+            <div class="card"><p>No usage recorded yet.</p></div>
+        <% } %>
+    </main>
+</body>
+</html>

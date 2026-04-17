@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistics - Data Catalog</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+        @media (max-width: 900px) {
+            .stats-grid { grid-template-columns: 1fr; }
+        }
+        .chart-box {
+            background-color: var(--md-sys-color-surface-variant);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+        }
+        .bar-container {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .bar-label {
+            width: 150px;
+            font-size: 12px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding-right: 8px;
+        }
+        .bar {
+            background-color: var(--md-sys-color-primary);
+            height: 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: white;
+            font-size: 11px;
+            min-width: 30px;
+            transition: width 0.5s ease-out;
+        }
+        .tag-pill {
+            display: inline-block;
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 12px;
+            margin: 4px;
+            font-weight: 500;
+            box-shadow: var(--elevation-1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Data Catalog System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/datasets">Datasets</a>
+            <a href="/stats">Statistics</a>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <h2>Platform Statistics</h2>
+            <p>Various analytics over the public dataset collection and our users' logging activities.</p>
+        </div>
+
+        <div class="stats-grid">
+            <div class="card">
+                <h3>Top 5 Contributing Organizations</h3>
+                <div class="chart-box">
+                    <% if(topOrgs.length > 0) { %>
+                    <% topOrgs.forEach(o => { 
+                        let max = topOrgs[0].count;
+                        let w = Math.max(10, (o.count / max) * 100);
+                    %>
+                    <div class="bar-container" title="<%= o.orgName %>">
+                        <div class="bar-label"><%= o.orgName %></div>
+                        <div class="bar" style="width: <%= w %>%"><%= o.count %></div>
+                    </div>
+                    <% }) %>
+                    <% } else { %> <p>No data</p> <% } %>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Top 5 Datasets by User Count</h3>
+                <div class="chart-box">
+                    <% if(topDatasets.length > 0) { %>
+                    <% topDatasets.forEach(d => { 
+                        let max = topDatasets[0].count;
+                        let w = Math.max(10, (d.count / max) * 100);
+                    %>
+                    <div class="bar-container" title="<%= d.name %>">
+                        <div class="bar-label"><%= d.name %></div>
+                        <div class="bar" style="width: <%= w %>%"><%= d.count %></div>
+                    </div>
+                    <% }) %>
+                    <% } else { %> <p>No user projects logged yet.</p> <% } %>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>Dataset Counts by Category</h3>
+                <h4>By Type</h4>
+                <table>
+                    <% byType.forEach(t => { %>
+                    <tr><td><strong style="text-transform:capitalize"><%= t.type %></strong></td><td><%= t.count %> Datasets</td></tr>
+                    <% }) %>
+                </table>
+                <h4 style="margin-top: 16px;">By Topic (Top 10)</h4>
+                <table>
+                    <% byTopic.forEach(t => { %>
+                    <tr><td><%= t.topicName %></td><td><%= t.count %> Datasets</td></tr>
+                    <% }) %>
+                </table>
+            </div>
+
+            <div class="card">
+                <h3>Usage By Project Type</h3>
+                <div class="chart-box">
+                    <% if(usageByProject.length > 0) { %>
+                    <% usageByProject.forEach(u => { 
+                        let max = Math.max(...usageByProject.map(x=>x.count));
+                        let w = Math.max(10, (u.count / max) * 100);
+                    %>
+                    <div class="bar-container">
+                        <div class="bar-label" style="text-transform: capitalize;"><%= u.category %></div>
+                        <div class="bar" style="width: <%= w %>%"><%= u.count %></div>
+                    </div>
+                    <% }) %>
+                    <% } else { %> <p>No user projects logged yet.</p> <% } %>
+                </div>
+                
+                <h4 style="margin-top: 24px;">Top 10 Tags Per Category</h4>
+                <% Object.keys(topTags).forEach(cat => { %>
+                    <h5 style="text-transform: capitalize; margin-bottom:8px; margin-top:16px; color: var(--md-sys-color-primary);"><%= cat %></h5>
+                    <div>
+                    <% topTags[cat].forEach(t => { %>
+                        <span class="tag-pill"><%= t.tag %> (<%= t.count %>)</span>
+                    <% }) %>
+                    </div>
+                <% }) %>
+                <% if(Object.keys(topTags).length === 0) { %> <p>No tags usage logged yet.</p> <% } %>
+            </div>
+        </div>
+    </main>
+</body>
+</html>

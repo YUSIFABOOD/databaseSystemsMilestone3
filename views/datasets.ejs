@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Browse Datasets</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Data Catalog System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/datasets">Datasets</a>
+            <a href="/stats">Statistics</a>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <h2>Browse Datasets</h2>
+            <form method="GET" action="/datasets" class="filters-bar">
+                <div class="input-group">
+                    <label>Organization Type</label>
+                    <select name="orgType">
+                        <option value="">All</option>
+                        <% orgTypes.forEach(t => { %>
+                            <option value="<%= t %>" <%= filters.orgType === t ? 'selected' : '' %>><%= t %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Format</label>
+                    <select name="format">
+                        <option value="">All</option>
+                        <% formats.forEach(f => { %>
+                            <option value="<%= f %>" <%= filters.format === f ? 'selected' : '' %>><%= f %></option>
+                        <% }) %>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Tag</label>
+                    <input type="text" name="tag" value="<%= filters.tag || '' %>" placeholder="e.g. health">
+                </div>
+                <button type="submit">Apply Filters</button>
+            </form>
+        </div>
+
+        <div class="card" style="padding:0">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Publisher</th>
+                        <th>Access Level</th>
+                        <th>Org Type</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% datasets.forEach(d => { %>
+                        <tr>
+                            <td><%= d.id %></td>
+                            <td><%= d.name.length > 50 ? d.name.substring(0, 50) + '...' : d.name %></td>
+                            <td><%= d.publisher || d.orgName %></td>
+                            <td style="text-transform: capitalize;"><%= d.accessLevel %></td>
+                            <td><%= d.orgType || 'N/A' %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            
+            <% if (pagination.totalPages > 1) { %>
+                <div class="pagination" style="padding: 24px;">
+                    <% if (pagination.page > 1) { %>
+                        <a href="/datasets?page=<%= pagination.page - 1 %>&orgType=<%= filters.orgType || '' %>&format=<%= filters.format || '' %>&tag=<%= filters.tag || '' %>">Previous</a>
+                    <% } %>
+                    
+                    <span>Page <%= pagination.page %> of <%= pagination.totalPages %></span>
+
+                    <% if (pagination.page < pagination.totalPages) { %>
+                        <a href="/datasets?page=<%= pagination.page + 1 %>&orgType=<%= filters.orgType || '' %>&format=<%= filters.format || '' %>&tag=<%= filters.tag || '' %>">Next</a>
+                    <% } %>
+                </div>
+            <% } %>
+        </div>
+    </main>
+</body>
+</html>

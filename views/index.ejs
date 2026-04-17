@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Catalog System</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header>
+        <h1>Data Catalog System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/datasets">Datasets</a>
+            <a href="/stats">Statistics</a>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <h2>Welcome to the Public Governmental Datasets Explorer</h2>
+            <p>This application allows you to search, view, and analyze information about the first 2000 available public datasets from data.gov.</p>
+        </div>
+        <div class="form-grid">
+            <div class="card">
+                <h3>User Portal</h3>
+                <p>Register an account to log your usage of the datasets for your personal projects.</p>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button onclick="location.href='/users/register'">Register User</button>
+                    <button onclick="location.href='/users/log-usage'">Log Dataset Usage</button>
+                    <button onclick="location.href='/users/view-usage'">View All Usage</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Exploration & Analytics</h3>
+                <p>Filter datasets by categories and see detailed insights.</p>
+                <div style="display:flex; gap:10px; margin-top:20px;">
+                    <button onclick="location.href='/datasets'">Browse Datasets</button>
+                    <button onclick="location.href='/stats'">View Statistics</button>
+                </div>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
