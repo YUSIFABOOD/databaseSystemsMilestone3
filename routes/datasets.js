@@ -11,8 +11,8 @@ router.get("/", async (req, res) => {
         const offset = (page - 1) * limit;
 
         let query = `
-            SELECT d.id, d.name, d.publisher, d.accessLevel, d.license,
-                   o.type as orgType, d.orgName, GROUP_CONCAT(DISTINCT r.format SEPARATOR ', ') as format
+            SELECT d.id, d.name, d.publisher, d.accessLevel, d.license, d.description,
+                   o.type as orgType, d.orgName, o.title as orgTitle, GROUP_CONCAT(DISTINCT r.format SEPARATOR ', ') as format
             FROM Dataset d
             LEFT JOIN Organization o ON d.orgName = o.name
             LEFT JOIN Resources r ON d.id = r.datasetId
@@ -86,6 +86,36 @@ router.get("/", async (req, res) => {
     } catch (e) {
         console.error("Error fetching datasets:", e);
         res.status(500).send("Error fetching datasets");
+    }
+});
+// Dataset Details
+router.get("/:id", async (req, res) => {
+    try {
+        const id = req.params.id;
+        
+        const [datasetRows] = await db.execute(`
+            SELECT d.*, o.type as orgType, o.title as orgTitle
+            FROM Dataset d
+            LEFT JOIN Organization o ON d.orgName = o.name
+            WHERE d.id = ?
+        `, [id]);
+        
+        if (datasetRows.length === 0) {
+            return res.status(404).send("Dataset not found");
+        }
+        const dataset = datasetRows[0];
+        
+        const [resources] = await db.execute("SELECT * FROM Resources WHERE datasetId = ?", [id]);
+        const [tagsRows] = await db.execute("SELECT tag FROM DatasetTags WHERE datasetId = ?", [id]);
+        
+        res.render("dataset-details", {
+            dataset,
+            resources,
+            tags: tagsRows.map(t => t.tag)
+        });
+    } catch (e) {
+        console.error("Error fetching dataset details:", e);
+        res.status(500).send("Error fetching dataset details");
     }
 });
 

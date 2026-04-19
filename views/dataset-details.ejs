@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= dataset.name %> - Data Catalog</title>
+    <link rel="stylesheet" href="/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="/theme.js"></script>
+    <style>
+        .detail-item {
+            margin-bottom: 16px;
+        }
+        .detail-label {
+            font-weight: 600;
+            color: var(--md-sys-color-primary);
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+        .detail-value {
+            font-size: 16px;
+        }
+        .tag-pill {
+            display: inline-block;
+            background-color: var(--md-sys-color-secondary-container);
+            color: var(--md-sys-color-on-secondary-container);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin: 4px 8px 4px 0;
+            font-weight: 500;
+            box-shadow: var(--elevation-1);
+        }
+        .resource-card {
+            background-color: var(--md-sys-color-surface-variant);
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .resource-format {
+            font-weight: bold;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Data Catalog System</h1>
+        <nav>
+            <a href="/">Home</a>
+            <a href="/datasets">Datasets</a>
+            <a href="/stats">Statistics</a>
+            <button class="theme-toggle" onclick="toggleTheme()">🌗</button>
+        </nav>
+    </header>
+    <main>
+        <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 24px;">
+                <h2 style="margin: 0;"><%= dataset.name %></h2>
+                <a href="/datasets" style="color: var(--md-sys-color-primary); text-decoration: none; font-weight: 500;">&larr; Back to Datasets</a>
+            </div>
+
+            <div class="detail-item">
+                <div class="detail-label">Description</div>
+                <div class="detail-value"><%= dataset.description || 'No description available.' %></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px; margin-top: 24px;">
+                <div>
+                    <div class="detail-item">
+                        <div class="detail-label">Organization</div>
+                        <div class="detail-value">
+                            <% if (dataset.orgName) { %>
+                                <a href="/organization/<%= dataset.orgName %>" style="color: inherit;"><%= dataset.orgTitle || dataset.orgName %></a>
+                                <span style="font-size: 12px; color: var(--md-sys-color-outline);">(<%= dataset.orgType || 'Unknown Type' %>)</span>
+                            <% } else { %>
+                                N/A
+                            <% } %>
+                        </div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">Publisher</div>
+                        <div class="detail-value"><%= dataset.publisher || 'N/A' %></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="detail-item">
+                        <div class="detail-label">Access Level</div>
+                        <div class="detail-value"><span style="background:var(--md-sys-color-surface-variant); padding:4px 8px; border-radius:4px; font-size:14px;"><%= dataset.accessLevel || 'Unknown' %></span></div>
+                    </div>
+                    <div class="detail-item">
+                        <div class="detail-label">License</div>
+                        <div class="detail-value"><%= dataset.license || 'Unknown' %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+            <h3 style="margin-top: 0;">Tags</h3>
+            <% if (tags && tags.length > 0) { %>
+                <div style="display: flex; flex-wrap: wrap;">
+                    <% tags.forEach(tag => { %>
+                        <span class="tag-pill"><%= tag %></span>
+                    <% }) %>
+                </div>
+            <% } else { %>
+                <p style="color: var(--md-sys-color-outline);">No tags available for this dataset.</p>
+            <% } %>
+        </div>
+
+        <div class="card" style="margin-top: 24px;">
+            <h3 style="margin-top: 0;">Resources</h3>
+            <% if (resources && resources.length > 0) { %>
+                <% resources.forEach(r => { %>
+                    <div class="resource-card">
+                        <div class="resource-format">Format: <%= (r.format && r.format.toUpperCase() === 'ACCDB') ? 'MS Access' : (r.format || 'Unknown') %></div>
+                        <% if (r.description) { %>
+                            <div style="margin-top: 8px; font-size: 14px;"><%= r.description %></div>
+                        <% } %>
+                        <% if (r.downloadUrl) { %>
+                            <div style="margin-top: 12px;">
+                                <a href="<%= r.downloadUrl %>" target="_blank" style="color: var(--md-sys-color-primary); text-decoration: none; font-weight: 500;">Download / Access Link</a>
+                            </div>
+                        <% } %>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p style="color: var(--md-sys-color-outline);">No resources available for this dataset.</p>
+            <% } %>
+        </div>
+    </main>
+</body>
+</html>

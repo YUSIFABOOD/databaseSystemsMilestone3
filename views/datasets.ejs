@@ -54,31 +54,33 @@
                     <thead>
                         <tr>
                             <th>Target Dataset Name</th>
-                            <th>Publisher</th>
-                            <th>License</th>
-                            <th>Org Type</th>
                             <th>Format</th>
+                            <th>Org Title</th>
+                            <th>Org Type</th>
                         </tr>
                     </thead>
                     <tbody>
                         <% datasets.forEach(d => { %>
                             <tr>
-                                <td style="font-weight: 500;"><%= d.name %></td>
+                                <td style="font-weight: 500;">
+                                    <a href="/datasets/<%= d.id %>" style="color: var(--md-sys-color-primary); text-decoration: none;"><%= d.name %></a>
+                                </td>
+                                <td><%= d.format || 'N/A' %></td>
                                 <td>
                                     <% if (d.orgName) { %>
-                                        <a href="/organization/<%= d.orgName %>" style="color: var(--md-sys-color-primary); font-weight: 500; text-decoration: none;"><%= d.publisher || d.orgName %></a>
+                                        <a href="/organization/<%= d.orgName %>" style="color: inherit; text-decoration: none;">
+                                            <%= d.orgTitle || d.orgName %>
+                                        </a>
                                     <% } else { %>
-                                        <%= d.publisher || 'N/A' %>
+                                        N/A
                                     <% } %>
                                 </td>
-                                <td><span style="background:var(--md-sys-color-surface-variant); padding:4px 8px; border-radius:4px; font-size:12px;"><%= d.license || 'Unknown' %></span></td>
                                 <td><%= d.orgType || 'N/A' %></td>
-                                <td><%= d.format || 'N/A' %></td>
                             </tr>
                         <% }) %>
                         <% if(datasets.length === 0) { %>
                             <tr>
-                                <td colspan="5" style="text-align: center; padding: 32px; color: var(--md-sys-color-on-surface-variant);">No datasets matched your filters. Try clearing them!</td>
+                                <td colspan="4" style="text-align: center; padding: 32px; color: var(--md-sys-color-on-surface-variant);">No datasets matched your filters. Try clearing them!</td>
                             </tr>
                         <% } %>
                     </tbody>

@@ -21,6 +21,24 @@
             border-radius: 12px;
             padding: 16px;
             margin-top: 16px;
+            max-height: 280px;
+            overflow-y: auto;
+        }
+        /* Custom scrollbar for better UI */
+        .chart-box::-webkit-scrollbar {
+            width: 8px;
+        }
+        .chart-box::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .chart-box::-webkit-scrollbar-thumb {
+            background-color: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+        @media (prefers-color-scheme: dark) {
+            .chart-box::-webkit-scrollbar-thumb {
+                background-color: rgba(255,255,255,0.2);
+            }
         }
         .bar-container {
             display: flex;
@@ -216,15 +234,17 @@
                 </div>
                 
                 <h4 style="margin-top: 24px;">Top 10 Tags Per Category</h4>
-                <% Object.keys(topTags).forEach(cat => { %>
-                    <h5 style="text-transform: capitalize; margin-bottom:8px; margin-top:16px; color: var(--md-sys-color-primary);"><%= cat %></h5>
-                    <div>
-                    <% topTags[cat].forEach(t => { %>
-                        <span class="tag-pill"><%= t.tag %> (<%= t.count %>)</span>
+                <div class="chart-box" style="margin-top: 8px;">
+                    <% Object.keys(topTags).forEach(cat => { %>
+                        <h5 style="text-transform: capitalize; margin-bottom:8px; margin-top:8px; color: var(--md-sys-color-primary);"><%= cat %></h5>
+                        <div style="margin-bottom: 12px;">
+                        <% topTags[cat].forEach(t => { %>
+                            <span class="tag-pill"><%= t.tag %> (<%= t.count %>)</span>
+                        <% }) %>
+                        </div>
                     <% }) %>
-                    </div>
-                <% }) %>
-                <% if(Object.keys(topTags).length === 0) { %> <p>No tags usage logged yet.</p> <% } %>
+                    <% if(Object.keys(topTags).length === 0) { %> <p>No tags usage logged yet.</p> <% } %>
+                </div>
             </div>
         </div>
     </main>
